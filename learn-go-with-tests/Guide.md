@@ -34,4 +34,43 @@ By ensuring your tests are fast and setting up your tools so that running tests 
 By not writing tests, you are committing to manually checking your code by running your software, which breaks your state of flow. You won't be saving yourself any time, especially in the long run.
 
 
+#### Benchmarking
+Writing benchmarks in Go is another first-class feature of the language and it is very similar to writing tests.
+
+```
+func BenchmarkRepeat(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		Repeat("a")
+	}
+}
+```
+
+
+The testing.B gives you access to the cryptically named b.N.
+
+When the benchmark code is executed, it runs b.N times and measures how long it takes.
+
+The amount of times the code is run shouldn't matter to you, the framework will determine what is a "good" value for that to let you have some decent results.
+
+To run the benchmarks do go test -bench=. (or if you're in Windows Powershell go test -bench=".")
+
+- NOTE by default Benchmarks are run sequentially.
+
+
+#### Writing just enough test
+It is important to question the value of your tests. It should not be a goal to have as many tests as possible, but rather to have as much confidence as possible in your code base. Having too many tests can turn in to a real problem and it just adds more overhead in maintenance. Every test has a cost.
+
+
+Go's built-in testing toolkit features a coverage tool. Whilst striving for 100% coverage should not be your end goal, the coverage tool can help identify areas of your code not covered by tests. If you have been strict with TDD, it's quite likely you'll have close to 100% coverage anyway.
+
+Try running
+```
+go test -cover 03arraysandslices/*.go
+```
+
+you should see
+```
+PASS
+coverage: 100.0% of statements
+```
 
