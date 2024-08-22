@@ -30,3 +30,11 @@ func (w *Wallet) Deposit(amount Bitcoin) {
 func (w *Wallet) Balance() Bitcoin {
 	return w.balance
 }
+
+// The next requirement is for a `Withdraw` function
+
+func (w *Wallet) Withdraw(amount Bitcoin) error {
+
+	w.balance -= amount
+	return nil
+}
