@@ -85,3 +85,22 @@ PASS
 coverage: 100.0% of statements
 ```
 
+
+
+#### Unchecked errors
+Whilst the Go compiler helps you a lot, sometimes there are things you can still miss and error handling can sometimes be tricky.
+To find them, run the following in a terminal to install `errcheck`, one of many linters available for Go.
+
+```
+go install github.com/kisielk/errcheck@latest
+```
+
+then, inside the directory with your code run
+```
+errcheck 05pointersanderros/*.go
+```
+this is what I got
+```
+wallet_test.go:17:18: wallet.Withdraw(Bitcoin(10))
+```
+what this is telling us is that we haven't checked the error being returned on that line of code.
