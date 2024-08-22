@@ -3,7 +3,18 @@
 
 
 
+
+#### Sections
+- 04structsmethodsinterfaces/
+	- This was more TDD practice, iterating over our solutions to basic mathematic problems and learning new language features motivated by our tests.
+		- Declaring structs to create your own data types which lets you bundle related data together and make the intent of your code clearer
+		- Declaring interfaces so you can define functions that can be used by different types (parametric polymorphism)
+		- Adding methods so you can add functionality to your data types and so you can implement interfaces
+		- Table driven tests to make your assertions clearer and your test suites easier to extend & maintain
+
+
 ## This is a guide for writing tests
+I will collect some basic infos and approachs below this line
 
 #### Writing tests
 Writing a test is just like writing a function, with a few rules
