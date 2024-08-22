@@ -40,4 +40,5 @@ func TestWallet(t *testing.T) {
 			t.Error("wanted an error but didn't get one")
 		}
 	})
+
 }

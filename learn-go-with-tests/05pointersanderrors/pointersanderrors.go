@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // To make Bitcoin, just use the syntax Bitcoin(999)
 type Bitcoin int
@@ -35,6 +38,9 @@ func (w *Wallet) Balance() Bitcoin {
 
 func (w *Wallet) Withdraw(amount Bitcoin) error {
 
+	if amount > w.balance {
+		return errors.New("oh no")
+	}
 	w.balance -= amount
 	return nil
 }
