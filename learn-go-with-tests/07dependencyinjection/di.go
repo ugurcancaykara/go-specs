@@ -1,6 +1,10 @@
 package main
 
-import "io"
+import (
+	"bytes"
+	"fmt"
+)
 
-func Greet(w io.Writer, name string) {
+func Greet(w *bytes.Buffer, name string) {
+	fmt.Fprintf(w, "Hello, %s", name)
 }
