@@ -36,5 +36,5 @@ func (d Dictionary) Add(word, definition string) error {
 }
 
 func (d Dictionary) Update(word, newDefinition string) {
-
+	d[word] = newDefinition
 }
