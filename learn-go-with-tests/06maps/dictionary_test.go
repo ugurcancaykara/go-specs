@@ -38,7 +38,7 @@ func TestAdd(t *testing.T) {
 	want := "this is just a test"
 
 	if err != nil {
-		t.Errorf("this error shouldn't be seen unless add doesn't properly works")
+		t.Fatal("should find added word:", err)
 	}
 	assertStrings(t, got, want)
 
