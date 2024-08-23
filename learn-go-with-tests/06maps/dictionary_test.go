@@ -9,7 +9,7 @@ func TestSearch(t *testing.T) {
 
 	t.Run("known word", func(t *testing.T) {
 
-		got := dictionary.Search("test")
+		got, _ := dictionary.Search("test")
 		want := "this is just a test"
 
 		if got != want {
