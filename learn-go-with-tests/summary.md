@@ -79,3 +79,21 @@ Wrapping up
 - Create new types from existing ones
 	- Useful for adding more domain specific meaning to values
 	- Can let you implement interfaces
+
+
+### Section 6 - Maps
+
+- Written tests at `06maps`
+
+Wrapping up
+
+In this section, we covered a lot. We made a full CRUD (Create, Read, Update and Delete) API for our dictionary. Throughout the process we learned how to:
+
+- Create maps
+- Search for items in maps
+- Add new items to maps
+- Update items in maps
+- Delete items from a map
+- Learned more about errors
+	- How to create errors that are constants
+	- Writing error wrappers
