@@ -10,6 +10,11 @@ import (
 const finalWord = "Go!"
 const countdownStart = 3
 
+// Mocking-1
+// Let's define our dependency as an interface. This lets us then use a real Sleeper in main and a spy sleeper in our tests. By using an interface our Countdown function is oblivious to this and adds some flexibility for the caller.
+type Sleeper interface {
+	Sleep()
+}
 func main() {
 
 	// 5- To complete matters, let's now wire up our function into a `main` so we have some working software to reassure ourselves we're making progress.
