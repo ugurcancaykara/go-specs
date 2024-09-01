@@ -38,7 +38,7 @@ func main() {
 }
 
 // 2- Write the minimal amount of code for the test to run and check the failing test output
-func Countdown(out io.Writer) { // 4- we know *bytes.Buffer works, it would be better to use general purpose interface instead
+func Countdown(out io.Writer, sleeper Sleeper) { // 4- we know *bytes.Buffer works, it would be better to use general purpose interface instead
 	// 3- write enough code to make it pass
 
 	// NOTE: Refactoring the function from 3.(was printing just '3' at this step) to iterative. Not gonna add anymore numbers, check git history to infer what added when
