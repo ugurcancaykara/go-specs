@@ -9,6 +9,8 @@ import (
 
 const finalWord = "Go!"
 const countdownStart = 3
+const write = "write"
+const sleep = "sleep"
 
 // Mocking-1
 // Let's define our dependency as an interface. This lets us then use a real Sleeper in main and a spy sleeper in our tests. By using an interface our Countdown function is oblivious to this and adds some flexibility for the caller.
@@ -36,6 +38,19 @@ type DefaultSleeper struct {
 
 func (d *DefaultSleeper) Sleep() {
 	time.Sleep(1 * time.Second)
+}
+
+type SpyCountdownOperations struct {
+	Calls []string
+}
+
+func (s *SpyCountdownOperations) Sleep() {
+	s.Calls = append(s.Calls, sleep)
+}
+
+func (s *SpyCountdownOperations) Write(p []byte) (n int, err error) {
+	s.Calls = append(s.Calls, write)
+	return
 }
 
 func main() {

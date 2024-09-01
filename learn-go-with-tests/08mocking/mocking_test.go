@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"reflect"
 	"testing"
 )
 
@@ -9,22 +10,35 @@ import (
 
 func TestCountdown(t *testing.T) {
 	// Update the tests to inject a dependency on our Spy and assert that the sleep has been called 3 times.
-	buffer := &bytes.Buffer{}
-	spySleeper := &SpySleeper{}
+	t.Run("prints 3 to Go!", func(t *testing.T) {
+		buffer := &bytes.Buffer{}
+		Countdown(buffer, &SpyCountdownOperations{})
 
-	Countdown(buffer, spySleeper)
-
-	got := buffer.String()
-	want := `3
+		got := buffer.String()
+		want := `3
 2
 1
 Go!`
+		if got != want {
+			t.Errorf("got %q want %q", got, want)
+		}
+	})
+	t.Run("sleep before every print", func(t *testing.T) {
+		spySleepPrinter := &SpyCountdownOperations{}
+		Countdown(spySleepPrinter, spySleepPrinter)
 
-	if got != want {
-		t.Errorf("got %q want %q", got, want)
-	}
+		want := []string{
+			write,
+			sleep,
+			write,
+			sleep,
+			write,
+			sleep,
+			write,
+		}
 
-	if spySleeper.Calls != 3 {
-		t.Errorf("not enough calls to sleeper, want 3 got %d", spySleeper.Calls)
-	}
+		if !reflect.DeepEqual(want, spySleepPrinter.Calls) {
+			t.Errorf("wanted calls %v got %v", want, spySleepPrinter.Calls)
+		}
+	})
 }
