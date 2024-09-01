@@ -15,6 +15,20 @@ const countdownStart = 3
 type Sleeper interface {
 	Sleep()
 }
+
+// Mocking-2
+// Made a design decision that our Countdown function would not be responsible for how long the sleep is. This simplifies our code a little for now at least and means a user of our function can configure that sleepiness however they like.
+
+type SpySleeper struct {
+	Calls int
+}
+
+func (s *SpySleeper) Sleep() {
+	s.Calls++
+}
+
+// Spies are a kind of mock which can record how a dependency is used. They can record the arguments sent in, how many times it has been called, etc. In our case, we're keeping track of how many times Sleep() is called so we can check it in our test.
+
 func main() {
 
 	// 5- To complete matters, let's now wire up our function into a `main` so we have some working software to reassure ourselves we're making progress.
@@ -35,7 +49,7 @@ func Countdown(out io.Writer) { // 4- we know *bytes.Buffer works, it would be b
 	}
 
 	// NOTE: Now tests still pass and the software works as intended but we have some problems:
-	// FIX: Our tests take 3 seconds to run (check `summary.md section - 8 for explanation`)
+	// FIX: Our tests take 3 seconds to run (check `summary.md section - 8 | Countdown example -> for explanation`)
 
 	fmt.Fprint(out, finalWord)
 }
