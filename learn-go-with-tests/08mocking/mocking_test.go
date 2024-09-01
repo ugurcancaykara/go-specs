@@ -8,7 +8,7 @@ import (
 // 1- Write the test first
 
 func TestCountdown(t *testing.T) {
-	buffer := bytes.Buffer{}
+	buffer := &bytes.Buffer{}
 
 	Countdown(buffer)
 
