@@ -33,13 +33,6 @@ func (s *SpySleeper) Sleep() {
 
 // Let's create a real sleeper which implements the interface we need
 
-type DefaultSleeper struct {
-}
-
-func (d *DefaultSleeper) Sleep() {
-	time.Sleep(1 * time.Second)
-}
-
 type SpyCountdownOperations struct {
 	Calls []string
 }
@@ -53,6 +46,28 @@ func (s *SpyCountdownOperations) Write(p []byte) (n int, err error) {
 	return
 }
 
+// Mocking-5. Extending Sleeper to be configurable
+// A nice feature would be for the Sleeper to be configurable. This means that we can adjust the sleep time in our main program.
+
+type ConfigurableSleeper struct {
+	duration time.Duration
+	sleep    func(time.Duration)
+}
+
+func (c *ConfigurableSleeper) Sleep() {
+	c.sleep(c.duration)
+}
+
+// We are using duration to configure the time slept and sleep as a way to pass in a sleep function. The signature of sleep is the same as for time.Sleep allowing us to use time.Sleep in our real implementation and the following spy in our tests:
+
+type SpyTime struct {
+	durationSlept time.Duration
+}
+
+func (s *SpyTime) Sleep(duration time.Duration) {
+	s.durationSlept = duration
+}
+
 func main() {
 
 	// 5- To complete matters, let's now wire up our function into a `main` so we have some working software to reassure ourselves we're making progress.
@@ -60,7 +75,7 @@ func main() {
 
 	// Mocking3
 	// We can then use it in our real application like so
-	sleeper := &DefaultSleeper{}
+	sleeper := &ConfigurableSleeper{1 * time.Second, time.Sleep}
 	Countdown(os.Stdout, sleeper)
 
 	// conclusion: Yes this seems trivial but this approach is what is recommended for any project. Take a thin slice of functionality and make it work end-to-end, backed by tests.
