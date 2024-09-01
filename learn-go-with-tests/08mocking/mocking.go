@@ -28,5 +28,9 @@ func Countdown(out io.Writer) { // 4- we know *bytes.Buffer works, it would be b
 		fmt.Fprintln(out, i)
 		time.Sleep(1 * time.Second)
 	}
+
+	// NOTE: Now tests still pass and the software works as intended but we have some problems:
+	// FIX: Our tests take 3 seconds to run (check `summary.md section - 8 for explanation`)
+
 	fmt.Fprint(out, finalWord)
 }
