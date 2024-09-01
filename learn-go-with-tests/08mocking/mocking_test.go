@@ -52,6 +52,10 @@ type ConfigurableSleeper struct {
 	sleep    func(time.Duration)
 }
 
+func (c *ConfigurableSleeper) Sleep() {
+
+}
+
 // We are using duration to configure the time slept and sleep as a way to pass in a sleep function. The signature of sleep is the same as for time.Sleep allowing us to use time.Sleep in our real implementation and the following spy in our tests:
 
 type SpyTime struct {
