@@ -127,7 +127,6 @@ You use mocking to replace real things you inject with a pretend version that yo
 
 - Written tests at `08mocking/`
 
-Wrapping up
 
 
 - Let's say we have a CountDown() functions which counts down from 3, printing each number on a new line. While this is a pretty trivial program, to test it fully we will need as always to take an iterative, test-driven approach.
@@ -154,5 +153,103 @@ We have not tested an important property of our function.
 We have a dependency on Sleeping which we need to extract so we can then control it in our tests.
 
 If we can mock time.Sleep we can use dependency injection to use it instead of a "real" time.Sleep and then we can spy on the calls to make assertions on them.
+
+### But isn't mocking evil ?
+
+You may have heard mocking is evil. Just like anything in software development it can be used for evil, just like DRY.
+
+People normally get in to a bad state when they don't listen to their tests and are not respecting the refactoring stage.
+
+
+If your mocking code is becoming complicated or you are having to mock out lots of things to test something, you should listen to that bad feeling and think about your code. Usually it is a sign of
+
+- The thing you are testing is having to do too many things (because it has too many dependencies to mock)
+	- Break the module apart so it does less
+
+- Its dependencies are too fine-grained
+	- Think about how you can consolidate some of these dependencies into one meaningful module
+
+- Your test is too concerned with implementation details
+	- Favour testing expected behaviour rather than the implementation
+
+Normally a lot of mocking points to bad abstraction in your code.
+
+What people see here is a weakness in TDD but it is actually a strength, more often than not poor test code is a result of bad design or put more nicely, well-designed code is easy to test.
+
+
+### But mocks and tests are still making my life hard!
+
+Ever run into this situation?
+
+- You want to do some refactoring
+
+- To do this you end up changing lots of tests
+
+- You question TDD and make a post on Medium titled "Mocking considered harmful"
+
+This is usually a sign of you testing too much implementation detail. Try to make it so your tests are testing useful behaviour unless the implementation is really important to how the system runs.
+
+It is sometimes hard to know what level to test exactly but here are some thought processes and rules to follow:
+
+- **The definition of refactoring is that the code changes but the behaviour stays the same.** If you have decided to do some refactoring in theory you should be able to make the commit without any test changes. So when writing a test ask yourself
+
+	- Am I testing the behaviour I want, or the implementation details?
+
+	- If I were to refactor this code, would I have to make lots of changes to the tests?
+
+- Although Go lets you test private functions, I would avoid it as private functions are implementation detail to support public behaviour. Test the public behaviour. Sandi Metz describes private functions as being "less stable" and you don't want to couple your tests to them.
+
+- Feel like if a test is working with more than 3 mocks then it is a red flag - time for a rethink on the design
+
+- Use spies with caution. Spies let you see the insides of the algorithm you are writing which can be very useful but that means a tighter coupling between your test code and the implementation. **Be sure you actually care about these details if you're going to spy on them**
+
+
+#### Can't I just use a mocking framework?
+
+Mocking requires no magic and is relatively simple; using a framework can make mocking seem more complicated than it is. We don't use automocking in this chapter so that we get:
+
+- a better understanding of how to mock
+
+- practice implementing interfaces
+
+In collaborative projects there is value in auto-generating mocks. In a team, a mock generation tool codifies consistency around the test doubles. This will avoid inconsistently written test doubles which can translate to inconsistently written tests.
+
+You should only use a mock generator that generates test doubles against an interface. Any tool that overly dictates how tests are written, or that use lots of 'magic', can get in the sea.
+
+
+
+
+### Wrapping Up
+
+
+#### More on TDD approach
+
+- When faced with less trivial examples, break the problem down into "thin vertical slices". Try to get to a point where you have working software backed by tests as soon as you can, to avoid getting in rabbit holes and taking a "big bang" approach.
+
+- Once you have some working software it should be easier to iterate with small steps until you arrive at the software you need.
+
+`"When to use iterative development? You should use iterative development only on projects that you want to succeed."`
+
+Martin Fowler.
+
+
+#### Mocking
+
+- **Without mocking important areas of your code will be untested.** In our case we would not be able to test that our code paused between each print but there are countless other examples. Calling a service that can fail? Wanting to test your system in a particular state? It is very hard to test these scenarios without mocking.
+
+- Without mocks you may have to set up databases and other third parties things just to test simple business rules. You're likely to have slow tests, resulting in **slow feedback loops.**
+
+- By having to spin up a database or a webservice to test something you're likely to have **fragile tests** due to the unreliability of such services.
+
+
+Once a developer learns about mocking it becomes very easy to over-test every single facet of a system in terms of the way it works rather than what it does. Always be mindful about **the value of your tests** and what impact they would have in future refactoring.
+
+In these tests about mocking we have only covered **Spies**, which are a kind of mock. Mocks are a type of "test double."
+
+[Test Double is a generic term for any case where you replace a production object for testing purposes](https://martinfowler.com/bliki/TestDouble.html)
+
+Under test doubles, there are various types like stubs, spies and indeed mocks! Check out Martin Fowler's post for more detail.
+
+
 
 
