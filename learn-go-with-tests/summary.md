@@ -123,3 +123,21 @@ Motivated by written tests we refactored the code so we could control where the 
 You use mocking to replace real things you inject with a pretend version that you can control and inspect in your tests. In our case though, the standard library had something ready for us to use.
 
 
+### Section 8 - Mocking
+
+- Written tests at `08mocking/`
+
+Wrapping up
+
+
+- Let's say we have a CountDown() functions which counts down from 3, printing each number on a new line. While this is a pretty trivial program, to test it fully we will need as always to take an iterative, test-driven approach.
+
+**What do I mean by iterative? We make sure we take the smallest steps we can to have useful software.**
+
+- We don't want to spend a long time with code that will theoretically work after some hacking because that's often how developers fall down rabbit holes. It's an important skill to be able to slice up requirements as small as you can so you can have working software.
+
+
+
+
+
+
