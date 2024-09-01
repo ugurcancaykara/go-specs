@@ -53,13 +53,16 @@ func main() {
 
 // 2- Write the minimal amount of code for the test to run and check the failing test output
 func Countdown(out io.Writer, sleeper Sleeper) { // 4- we know *bytes.Buffer works, it would be better to use general purpose interface instead
-	// 3- write enough code to make it pass
 
+	for i := countdownStart; i > 0; i-- {
+		sleeper.Sleep()
+	}
+
+	// 3- write enough code to make it pass
 	// NOTE: Refactoring the function from 3.(was printing just '3' at this step) to iterative. Not gonna add anymore numbers, check git history to infer what added when
 
 	for i := countdownStart; i > 0; i-- {
 		fmt.Fprintln(out, i)
-		sleeper.Sleep()
 	}
 
 	// NOTE: Now tests still pass and the software works as intended but we have some problems:
