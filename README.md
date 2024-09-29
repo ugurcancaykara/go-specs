@@ -9,4 +9,4 @@ I will hold practice code blocks regarding to golang here as monorepo
 
 `practices`
 - [Simple Webcrawler](practices/webcrawler)
-- [Simple Gator RSS Feed CLI](practices/rssfeed)
+- [Simple gator RSS Feed CLI](practices/rssfeed)
