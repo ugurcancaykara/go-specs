@@ -29,3 +29,15 @@ WHERE feed_follows.feed_id = feeds.id
 AND feed_follows.user_id = $1
 AND feeds.url = $2;
 
+
+-- name: MarkFeedFetched :exec
+UPDATE feeds
+SET last_fetched_at = now(), update_at = now()
+WHERE id = $1;
+
+-- name: GetNextFeedToFetch :one
+SELECT id, name, url, last_fetched_at, user_id, created_at, updated_at
+FROM feeds
+ORDER BY last_fetched_at NULLS FIRST, last_fetched_at ASC
+LIMIT 1;
+

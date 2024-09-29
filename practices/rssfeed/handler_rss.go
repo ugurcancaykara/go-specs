@@ -2,8 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
+	"log"
 	"os"
+	"os/signal"
+	"strings"
+	"syscall"
 	"time"
 
 	"github.com/google/uuid"
@@ -30,22 +35,41 @@ func handlerFeeds(s *state, cmd command) error {
 }
 
 func handlerRSS(s *state, cmd command) error {
-	feedURL := "https://www.wagslane.dev/index.xml"
-	feed, err := fetchFeed(context.Background(), feedURL)
+	if len(cmd.Args) < 1 || len(cmd.Args) > 2 {
+		return fmt.Errorf("usage: %v <time_between_reqs>", cmd.Name)
+	}
+
+	// Parse the duration from the argument
+	timeBetweenRequests, err := time.ParseDuration(cmd.Args[0])
 	if err != nil {
-		fmt.Printf("Error fetching feed: %v\n", err)
-		return nil
+		return fmt.Errorf("invalid duration: %w", err)
 	}
 
-	// Print the fetched feed for verification
-	fmt.Printf("Feed Title: %s\n", feed.Channel.Title)
-	fmt.Printf("Feed Link: %s\n", feed.Channel.Link)
-	fmt.Printf("Feed Description: %s\n", feed.Channel.Description)
-	for _, item := range feed.Channel.Item {
-		fmt.Printf("\nTitle: %s\nLink: %s\nDescription: %s\nPublished Date: %s\n", item.Title, item.Link, item.Description, item.PubDate)
-	}
+	fmt.Printf("Collecting feeds every %s\n", timeBetweenRequests)
 
-	return nil
+	// Set up a ticker to scrape feeds at the given interval
+	ticker := time.NewTicker(timeBetweenRequests)
+	defer ticker.Stop()
+
+	// Channel to listen for system interrupt signals
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	// Run the scrapeFeeds function in a loop
+	for {
+		select {
+		case <-quit:
+			// Handle graceful shutdown
+			fmt.Println("Received interrupt signal, shutting down...")
+			return nil
+		case <-ticker.C:
+			// Scrape feeds on every tick
+			err := scrapeFeeds(s)
+			if err != nil {
+				fmt.Printf("Error while scraping feeds: %v\n", err)
+			}
+		}
+	}
 }
 
 func handlerAddFeed(s *state, cmd command, user database.User) error {
@@ -95,4 +119,62 @@ func printFeed(feed database.Feed) {
 	fmt.Printf("* Name:          %s\n", feed.Name)
 	fmt.Printf("* URL:           %s\n", feed.Url)
 	fmt.Printf("* UserID:        %s\n", feed.UserID)
+	fmt.Printf("* LastFetchedAt: %v\n", feed.LastFetchedAt.Time)
+}
+
+func scrapeFeeds(s *state) error {
+	// Get the next feed to fetch
+	feed, err := s.db.GetNextFeedToFetch(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed to get next feed: %w", err)
+	}
+
+	fmt.Printf("Fetching feed: %s (%s)\n", feed.Name, feed.Url)
+
+	// Mark the feed as fetched
+	err = s.db.MarkFeedFetched(context.Background(), feed.ID)
+	if err != nil {
+		return fmt.Errorf("failed to mark feed as fetched: %w", err)
+	}
+
+	// Fetch the feed using the URL
+	feedData, err := fetchFeed(context.Background(), feed.Url)
+	if err != nil {
+		return fmt.Errorf("failed to fetch feed data: %w", err)
+	}
+
+	// Print out the titles of the posts
+	fmt.Printf("Feed: %s\n", feed.Name)
+	for _, item := range feedData.Channel.Item {
+		publishedAt := sql.NullTime{}
+		if t, err := time.Parse(time.RFC1123Z, item.PubDate); err == nil {
+			publishedAt = sql.NullTime{
+				Time:  t,
+				Valid: true,
+			}
+		}
+
+		_, err = s.db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:        uuid.New(),
+			CreatedAt: time.Now().UTC(),
+			UpdatedAt: time.Now().UTC(),
+			FeedID:    feed.ID,
+			Title:     item.Title,
+			Description: sql.NullString{
+				String: item.Description,
+				Valid:  true,
+			},
+			Url:         item.Link,
+			PublishedAt: publishedAt,
+		})
+		if err != nil {
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				continue
+			}
+			log.Printf("Couldn't create post: %v", err)
+			continue
+		}
+	}
+
+	return nil
 }
